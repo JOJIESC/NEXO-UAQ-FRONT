@@ -19,6 +19,7 @@ export const API_ENDPOINTS ={
         CREATE_USER: '/users',
         GET_USERS: '/users',
         GET_USER_BY_ID: (id: string) => `/users/${id}`,
+        ME: '/users/me'
     },
 
 }

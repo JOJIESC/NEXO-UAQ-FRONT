@@ -45,7 +45,8 @@ export function LoginForm({
     try{
       const result = await loginAction(data.email, data.password)
 
-      if(result.success){
+      if(result.success && result.access_token){
+
         toast.success('!Bienvenido')
         router.push("/dashboard")
         router.refresh()

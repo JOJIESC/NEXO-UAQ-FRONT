@@ -22,7 +22,7 @@ export async function loginAction(email: string, password: string) {
             path: '/',
         });
 
-        return { success: true, user: response.user };
+        return { success: true, user: response.user, access_token: response.access_token };
     } catch (error) {
         return {
             success: false,
