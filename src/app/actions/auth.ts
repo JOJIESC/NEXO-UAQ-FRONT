@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { apiClient } from '@/lib/api/client';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { redirect } from 'next/navigation';
+import { User } from '@/features/auth/types/auth.types';
 
 export async function loginAction(email: string, password: string) {
     try {
@@ -55,5 +56,21 @@ export async function signupAction(email: string, password: string, name: string
             success: false,
             error: error instanceof Error ? error.message : 'Error al iniciar sesión',
         };
+    }
+}
+
+export async function getSessionUser(): Promise<User | null> {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('access_token')?.value;
+
+        if (!token) return null;
+
+        // Utilizamos tu apiClient configurado para Server Components
+        const user = await apiClient.getServer<User>(API_ENDPOINTS.USERS.ME);
+        return user;
+    } catch (error) {
+        console.error("Error fetching session user:", error);
+        return null;
     }
 }
