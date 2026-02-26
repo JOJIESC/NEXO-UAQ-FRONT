@@ -57,3 +57,29 @@ export async function deletePostAction(id: string) {
     //     };
     // }
 }
+
+export async function getMyProjectsAction(){
+    try {
+        // Como esto se ejecuta en el servidor, usar apiClient aquí es 100% seguro y legal
+        const posts = await apiClient.getServer<any[]>(API_ENDPOINTS.POSTS.GET_MY_PROJECTS);
+        return { success: true, data: posts };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Error al obtener proyectos'
+        };
+    }
+}
+
+export async function getProjectDetailsAction(id: string) {
+    try {
+        // Hacemos la petición al backend con el ID
+        const post = await apiClient.getServer<any>(API_ENDPOINTS.POSTS.GET_PROJECT_DETAILS(id));
+        return { success: true, data: post };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Error al obtener el proyecto'
+        };
+    }
+}

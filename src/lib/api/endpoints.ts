@@ -6,7 +6,8 @@ export const API_ENDPOINTS ={
         // REQUIRE LOGIN
         CREATE: '/posts',
         GET_ALL_PROJECTS: '/posts',
-        GET_PROJECT_DETAILS: (id: string) => `/posts/${id}`
+        GET_PROJECT_DETAILS: (id: string) => `/posts/${id}`,
+        GET_MY_PROJECTS: '/posts/my-posts',
 
     },
     APPLICATIONS: {
