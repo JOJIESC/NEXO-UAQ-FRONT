@@ -18,6 +18,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import {CreatePostDialog} from "@/components/posts/CreatePostDialog";
 
 export function NavMain({
   items,
@@ -72,6 +73,7 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
+        <CreatePostDialog/>
       </SidebarMenu>
     </SidebarGroup>
   )

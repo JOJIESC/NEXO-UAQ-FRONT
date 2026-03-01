@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { useEffect, useState } from "react"
 import {
   BookOpen,
+  CirclePlus,
+  StickyNote,
   Folder, // Asegúrate de importar Folder
   School,
   type LucideIcon // <--- 1. Importamos el tipo para los íconos
@@ -26,47 +27,8 @@ import {
 import { navItems as data } from "@/lib/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 
-// 2. ELIMINAMOS los imports de apiClient y API_ENDPOINTS
-// 3. IMPORTAMOS la acción del servidor
-import { getMyProjectsAction } from "@/app/actions/posts";
-import {toast} from "sonner";
-
-// 4. Definimos la forma exacta que espera el estado para evitar el error de TypeScript
-type SidebarProject = {
-  name: string;
-  url: string;
-  icon: LucideIcon;
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
-
-  // 5. Le decimos explícitamente a TypeScript qué tipo de array guardaremos
-  const [projects, setProjects] = useState<SidebarProject[]>(data.projects);
-
-  useEffect(() => {
-    async function fetchMyProjects() {
-      if (!user) return;
-
-      // 6. Usamos nuestra acción de servidor
-      const response = await getMyProjectsAction();
-
-      if (response.success && response.data) {
-        // Al indicarle el tipo :SidebarProject[] aquí también, evitamos conflictos
-        const formattedProjects: SidebarProject[] = response.data.map((post: any) => ({
-          name: post.title,
-          url: `/posts/${post.id}`,
-          icon: post.type === 'PROJECT' ? Folder : BookOpen,
-        }));
-
-        setProjects(formattedProjects);
-      } else {
-        toast.error("Error .");
-      }
-    }
-
-    fetchMyProjects().catch(console.error);
-  }, [user]);
 
   if (!user) return null;
 
@@ -91,8 +53,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         <SidebarContent>
           <NavMain items={data.navMain} />
-          {/* NavProjects recibirá correctamente el tipado */}
-          <NavProjects projects={projects} />
           <NavSecondary items={data.navSecondary} className="mt-auto" />
         </SidebarContent>
 

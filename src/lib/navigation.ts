@@ -7,7 +7,8 @@ import {
     Info,
     LayoutDashboard,
     Signature,
-    Search
+    Search,
+    StickyNote
 } from "lucide-react";
 
 // FETCH PARA VER PROYECTOS ACTIVOS Y LISTAR EN PROJECTS
@@ -32,6 +33,11 @@ export const navItems = {
             title: "Candidatos",
             url: "#",
             icon: Signature,
+        },
+        {
+            title: "Mis posts",
+            url: "/posts/my-posts",
+            icon: StickyNote
         }
     ],
     navSecondary: [
@@ -56,21 +62,5 @@ export const navItems = {
             icon: Search
         }
     ],
-    projects: [
-        {
-            name: "Design Engineering",
-            url: "#",
-            icon: Frame,
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
-        },
-    ],
+    projects: [],
 }

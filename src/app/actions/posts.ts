@@ -2,7 +2,7 @@
 
 import { apiClient } from '@/lib/api/client';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
-import { revalidateTag } from 'next/cache';
+import {revalidatePath, } from 'next/cache';
 import { CreatePostDto, UpdatePostDto } from '@/lib/schemas/posts.schemas';
 
 export async function createPostAction(data: CreatePostDto) {
@@ -11,10 +11,7 @@ export async function createPostAction(data: CreatePostDto) {
             API_ENDPOINTS.POSTS.CREATE,
             data
         );
-
-        // Revalidar el caché de posts
-        revalidateTag('posts',"max");
-
+        revalidatePath('/dashboard', 'layout');
         return { success: true, data: post };
     } catch (error) {
         return {
@@ -44,24 +41,22 @@ export async function updatePostAction(id: string, data: UpdatePostDto) {
 }
 
 export async function deletePostAction(id: string) {
-    // try {
-    //     await apiClient.deleteServer(API_ENDPOINTS.POSTS.DELETE(id));
-    //
-    //     revalidateTag('posts',"max");
-    //
-    //     return { success: true };
-    // } catch (error) {
-    //     return {
-    //         success: false,
-    //         error: error instanceof Error ? error.message : 'Error al eliminar post'
-    //     };
-    // }
+    try {
+        await apiClient.deleteServer(API_ENDPOINTS.POSTS.DELETE_PROJECT(id));
+
+
+        return { success: true };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Error al eliminar post'
+        };
+    }
 }
 
 export async function getMyProjectsAction(){
     try {
-        // Como esto se ejecuta en el servidor, usar apiClient aquí es 100% seguro y legal
-        const posts = await apiClient.getServer<any[]>(API_ENDPOINTS.POSTS.GET_MY_PROJECTS);
+        const posts = await apiClient.getServer<any[]>(API_ENDPOINTS.POSTS.GET_MY_PROJECTS,);
         return { success: true, data: posts };
     } catch (error) {
         return {
@@ -80,6 +75,19 @@ export async function getProjectDetailsAction(id: string) {
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Error al obtener el proyecto'
+        };
+    }
+}
+
+export async function getAllProjectsAction() {
+    try {
+        // GET_ALL_PROJECTS ya está definido en tus endpoints como '/posts'
+        const posts = await apiClient.getServer<any[]>(API_ENDPOINTS.POSTS.GET_ALL_PROJECTS, );
+        return { success: true, data: posts };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Error al obtener los proyectos'
         };
     }
 }
