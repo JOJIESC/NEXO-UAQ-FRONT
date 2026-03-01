@@ -1,8 +1,9 @@
 import Link from "next/link"
 import { getAllProjectsAction } from "@/app/actions/posts"
 import { Separator } from "@/components/ui/separator"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {ApplyButton} from "@/components/shared/ApplyButton";
 
 export default async function DashboardPage() {
     // 1. Hacemos el fetch directamente en el servidor
@@ -11,7 +12,6 @@ export default async function DashboardPage() {
 
     return (
         <>
-            {/* Contenido principal centrado para estilo Feed */}
             <div className="flex flex-1 flex-col items-center p-4 pt-0 w-full">
 
                 {/* Cabecera del Feed */}
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
                             return (
                                 // 2. El componente Link envuelve a la Card
                                 <Link
-                                    href={`/dashboard/projects/${project.id}`}
+                                    href={`/posts/${project.id}`}
                                     key={project.id}
                                     className="block transition-all duration-200 hover:-translate-y-1 hover:shadow-lg rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 >
@@ -86,6 +86,9 @@ export default async function DashboardPage() {
                                                 {project.description}
                                             </CardDescription>
                                         </CardContent>
+                                        <CardFooter>
+                                            <ApplyButton postId={project.id}/>
+                                        </CardFooter>
                                     </Card>
                                 </Link>
                             );

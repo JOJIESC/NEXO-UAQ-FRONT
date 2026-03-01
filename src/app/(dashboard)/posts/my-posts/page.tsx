@@ -76,7 +76,7 @@ export default function MyPostsPage() {
                         ) : (
                             projects.map((project: any) => (
                                 <Link
-                                    href={`/dashboard/projects/${project.id}`}
+                                    href={`/posts/${project.id}`}
                                     key={project.id}
                                     className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 >
