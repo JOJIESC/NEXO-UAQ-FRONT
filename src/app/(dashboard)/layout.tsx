@@ -1,20 +1,13 @@
-
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import {AppSidebar} from "@/components/layout/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar"
 
+// 1. Importamos el componente que acabamos de crear
+import { DynamicBreadcrumb } from "@/components/layout/dynamic-breadcrumb"
 
 export default function DashboardLayout({
                                             children,
@@ -32,19 +25,10 @@ export default function DashboardLayout({
                             orientation="vertical"
                             className="mr-2 data-[orientation=vertical]:h-4"
                         />
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="#">
-                                        Build Your Application
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block" />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+
+                        {/* 2. Reemplazamos el Breadcrumb estático por el dinámico */}
+                        <DynamicBreadcrumb />
+
                     </div>
                 </header>
                 {/* Aquí se renderizarán todas las páginas (page.tsx) que estén dentro de (dashboard) */}

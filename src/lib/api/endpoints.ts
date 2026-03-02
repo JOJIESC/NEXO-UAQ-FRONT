@@ -13,7 +13,7 @@ export const API_ENDPOINTS ={
     },
     APPLICATIONS: {
         APPLY: (postId: string) => `/applications/${postId}`,
-        GET_PARTICIPANTS: (postId: string) => `/applications/posts/${postId}`,
+        GET_PARTICIPANTS: (postId: string) => `/applications/post/${postId}`,
         PATCH_ACCEPT_REQUEST: (id: string) => `/applications/${id}/accept`,
         PATCH_REJECT_REQUEST: (id: string) => `/applications/${id}/reject`,
     },

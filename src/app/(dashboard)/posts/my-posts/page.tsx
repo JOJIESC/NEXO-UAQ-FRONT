@@ -10,7 +10,8 @@ import {
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle
+    CardTitle,
+    CardFooter // <--- IMPORTAMOS CardFooter
 } from "@/components/ui/card"
 import {
     Breadcrumb,
@@ -23,11 +24,12 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
+import { Button } from "@/components/ui/button" // <--- IMPORTAMOS Button
+import { Eye, Users } from "lucide-react" // <--- IMPORTAMOS Iconos
 
 export default function MyPostsPage() {
     const { user } = useAuth();
 
-    // 1. Guardamos los datos completos de la API, no solo el SidebarProject
     const [projects, setProjects] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -39,7 +41,6 @@ export default function MyPostsPage() {
             const response = await getMyProjectsAction();
 
             if (response.success && response.data) {
-                // Guardamos la data cruda para usarla en las tarjetas
                 setProjects(response.data);
             } else {
                 toast.error(response.error || "Error al cargar los proyectos.");
@@ -48,21 +49,18 @@ export default function MyPostsPage() {
         }
 
         fetchMyProjects().catch(console.error);
-    }, [user]); // 2. Agregamos 'user' como dependencia para que reaccione al contexto
+    }, [user]);
 
     return (
         <>
-            {/* Contenedor Principal */}
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                 <div className="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">Mis Proyectos</h1>
                         <p className="text-muted-foreground">Administra los proyectos y talleres de los que eres propietario.</p>
                     </div>
-                    {/* Aquí podrías renderizar tu <CreatePostDialog /> si quisieras un botón rápido en esta vista */}
                 </div>
 
-                {/* Grid de Contenido */}
                 {isLoading ? (
                     <div className="flex justify-center items-center h-64">
                         <Spinner className="h-8 w-8 text-primary" />
@@ -75,12 +73,12 @@ export default function MyPostsPage() {
                             </div>
                         ) : (
                             projects.map((project: any) => (
-                                <Link
-                                    href={`/posts/${project.id}`}
+                                /* 1. Quitamos el <Link> padre y pasamos los estilos de hover a la Card */
+                                <Card
                                     key={project.id}
-                                    className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="h-full flex flex-col justify-between transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-xl"
                                 >
-                                    <Card className="h-full flex flex-col justify-between cursor-pointer">
+                                    <div>
                                         <CardHeader className="pb-4">
                                             <div className="flex justify-between items-start mb-2">
                                                 <span className="px-2 py-1 bg-primary/10 text-primary text-[10px] uppercase font-bold rounded-md tracking-wider">
@@ -108,8 +106,24 @@ export default function MyPostsPage() {
                                                 </span>
                                             </div>
                                         </CardContent>
-                                    </Card>
-                                </Link>
+                                    </div>
+
+                                    {/* 2. Agregamos el CardFooter con los dos botones de acción */}
+                                    <CardFooter className="flex gap-2 pt-0">
+                                        <Button asChild variant="outline" className="flex-1">
+                                            <Link href={`/posts/${project.id}`}>
+                                                <Eye className="w-4 h-4 mr-2" />
+                                                Ver
+                                            </Link>
+                                        </Button>
+                                        <Button asChild className="flex-1">
+                                            <Link href={`/posts/${project.id}/candidates`}>
+                                                <Users className="w-4 h-4 mr-2" />
+                                                Candidatos
+                                            </Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
                             ))
                         )}
                     </div>

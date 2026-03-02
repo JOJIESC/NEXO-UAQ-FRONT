@@ -2,12 +2,11 @@
 
 import {
   BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from "lucide-react"
+
+import {redirect} from 'next/navigation'
 
 import {
   Avatar,
@@ -77,7 +76,7 @@ export function NavUser({user}: any) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => redirect('/account')}>
                 <BadgeCheck />
                 Cuenta
               </DropdownMenuItem>

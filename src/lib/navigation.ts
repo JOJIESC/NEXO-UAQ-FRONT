@@ -30,11 +30,6 @@ export const navItems = {
             isActive: true,
         },
         {
-            title: "Candidatos",
-            url: "#",
-            icon: Signature,
-        },
-        {
             title: "Mis posts",
             url: "/posts/my-posts",
             icon: StickyNote
