@@ -63,9 +63,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Bienvenido</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Ingresa con tu cuenta de Google o Apple
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,7 +92,7 @@ export function LoginForm({
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
+                O continua con
               </FieldSeparator>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -112,7 +112,7 @@ export function LoginForm({
                     href="#"
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
-                    Forgot your password?
+                    ¿Olvidaste tu contraseña?
                   </a>
                 </div>
                 <Input id="password" type="password" required disabled={isLoading} {...register('password')}/>
@@ -130,7 +130,7 @@ export function LoginForm({
                   )}
                 </Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="/signup">Sign up</a>
+                  ¿No tienes una cuenta? <a href="/signup">Registrate</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>

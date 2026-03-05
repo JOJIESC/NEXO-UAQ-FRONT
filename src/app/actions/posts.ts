@@ -11,6 +11,7 @@ export async function createPostAction(data: CreatePostDto) {
             API_ENDPOINTS.POSTS.CREATE,
             data
         );
+        revalidatePath('/posts/my-posts')
         revalidatePath('/dashboard', 'layout');
         return { success: true, data: post };
     } catch (error) {

@@ -13,16 +13,7 @@ import {
     CardTitle,
     CardFooter // <--- IMPORTAMOS CardFooter
 } from "@/components/ui/card"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator
-} from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button" // <--- IMPORTAMOS Button
 import { Eye, Users } from "lucide-react" // <--- IMPORTAMOS Iconos
@@ -49,7 +40,7 @@ export default function MyPostsPage() {
         }
 
         fetchMyProjects().catch(console.error);
-    }, [user]);
+    }, []);
 
     return (
         <>
