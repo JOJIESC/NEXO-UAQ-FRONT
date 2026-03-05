@@ -183,18 +183,25 @@ class ApiClient {
     }
 
     // Métodos específicos para SERVER COMPONENTS (Server Actions)
+// Métodos específicos para SERVER COMPONENTS (Server Actions)
     async getServer<T>(
         endpoint: string,
         params?: Record<string, string | number | boolean>,
         cacheOptions?: { revalidate?: number | false; tags?: string[] }
     ): Promise<T> {
+        // Determinamos si queremos desactivar el caché
+        const isNoCache = cacheOptions?.revalidate === false;
+
         return this.request<T>(endpoint, {
             method: 'GET',
             params,
             isServer: true,
-            cache: cacheOptions?.revalidate === false ? 'no-store' : 'force-cache',
+            // Si revalidate es false, usamos 'no-store', si no, 'force-cache'
+            cache: isNoCache ? 'no-store' : 'force-cache',
             next: {
-                revalidate: cacheOptions?.revalidate,
+                // CORRECCIÓN: Si es 'no-store', NO debemos mandar 'revalidate: false'
+                // Mandamos undefined para que 'cache: no-store' tome prioridad sin conflictos.
+                revalidate: isNoCache ? undefined : cacheOptions?.revalidate,
                 tags: cacheOptions?.tags,
             },
         });

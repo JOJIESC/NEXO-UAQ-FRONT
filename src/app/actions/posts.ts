@@ -83,7 +83,7 @@ export async function getProjectDetailsAction(id: string) {
 export async function getAllProjectsAction() {
     try {
         // GET_ALL_PROJECTS ya está definido en tus endpoints como '/posts'
-        const posts = await apiClient.getServer<any[]>(API_ENDPOINTS.POSTS.GET_ALL_PROJECTS, );
+        const posts = await apiClient.getServer<any[]>(API_ENDPOINTS.POSTS.GET_ALL_PROJECTS, undefined, {revalidate: false} );
         return { success: true, data: posts };
     } catch (error) {
         return {
