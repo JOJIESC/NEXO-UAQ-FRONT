@@ -36,7 +36,7 @@ export default async function DashboardPage() {
 
                             return (
                                 // 1. QUITAMOS EL LINK QUE ENVOLVÍA TODO
-                                <Card key={project.id} className="w-full flex flex-col overflow-hidden transition-all duration-200 hover:shadow-lg">
+                                <Card key={project.id} className="bg-neutral-100 w-full flex flex-col overflow-hidden transition-all duration-200 hover:shadow-lg">
                                     <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-10 w-10">

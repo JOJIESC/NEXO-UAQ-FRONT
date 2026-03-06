@@ -30,7 +30,7 @@ export default async function RootLayout({
     const user = await getSessionUser();
 
     return (
-        <html lang="en" className="dark">
+        <html lang="en" className="">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* 4. Envolver la app con el AuthProvider y pasar el usuario */}
         <AuthProvider user={user}>
