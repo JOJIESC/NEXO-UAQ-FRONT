@@ -1,7 +1,7 @@
 
 import { cookies } from 'next/headers';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://nexo-uaq-back.vercel.app';
 
 interface RequestConfig extends RequestInit {
     params?: Record<string, string | number | boolean>;
