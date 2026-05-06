@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const token = request.cookies.get('access_token')?.value;
 
     // Rutas protegidas
@@ -14,8 +14,8 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // Si está autenticado y trata de ir a login/register, redirigir a dashboard
-    const authPaths = ['/login', '/register'];
+    // Si está autenticado y trata de ir a login/signup, redirigir a dashboard
+    const authPaths = ['/login', '/signup'];
     const isAuthPath = authPaths.some(path =>
         request.nextUrl.pathname.startsWith(path)
     );
@@ -34,6 +34,6 @@ export const config = {
         '/posts/my-posts',
         '/account',
         '/login',
-        '/register',
+        '/signup',
     ],
 };

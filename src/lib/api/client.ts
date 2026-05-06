@@ -1,11 +1,9 @@
-
 import { cookies } from 'next/headers';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://nexo-uaq-back.vercel.app';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nexo-uaq-back.vercel.app';
 
 interface RequestConfig extends RequestInit {
     params?: Record<string, string | number | boolean>;
-    isServer?: boolean;
 }
 
 class ApiClient {
@@ -15,34 +13,14 @@ class ApiClient {
         this.baseURL = baseURL;
     }
 
-    private async getAuthToken(isServer?: boolean): Promise<string | null> {
-        // En el servidor (Server Components)
-        if (isServer && typeof window === 'undefined') {
-            try {
-                const cookieStore = await cookies();
-                const token = cookieStore.get('access_token')?.value || null;
-                return token;
-            } catch (error) {
-                console.error('Error reading server cookies:', error);
-                return null;
-            }
+    private async getAuthToken(): Promise<string | null> {
+        if (typeof window !== 'undefined') return null;
+        try {
+            const cookieStore = await cookies();
+            return cookieStore.get('access_token')?.value || null;
+        } catch {
+            return null;
         }
-
-        // En el cliente (Client Components)
-        if (typeof window !== 'undefined') {
-            // Primero intentar desde cookies
-            const cookieToken = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('access_token='))
-                ?.split('=')[1];
-
-            if (cookieToken) return cookieToken;
-
-            // Fallback a localStorage
-            return localStorage.getItem('access_token');
-        }
-
-        return null;
     }
 
     private buildURL(endpoint: string, params?: Record<string, string | number | boolean>): string {
@@ -66,21 +44,8 @@ class ApiClient {
 
             try {
                 errorData = isJson ? await response.json() : await response.text();
-            } catch (e) {
+            } catch {
                 errorData = { message: 'Error parsing response' };
-            }
-
-            // Manejo específico de errores
-            if (response.status === 401) {
-                // Token expirado o inválido - solo en cliente
-                if (typeof window !== 'undefined') {
-                    // Limpiar tokens
-                    localStorage.removeItem('access_token');
-                    document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-
-                    // Redirigir al login
-                    window.location.href = '/login?error=session_expired';
-                }
             }
 
             const errorMessage =
@@ -92,17 +57,14 @@ class ApiClient {
             throw new Error(errorMessage);
         }
 
-        // No content
         if (response.status === 204) {
             return {} as T;
         }
 
-        // Retornar según el tipo de contenido
         if (isJson) {
             return await response.json() as Promise<T>;
         }
 
-        // Si no es JSON, retornar el texto como tipo desconocido
         return await response.text() as unknown as Promise<T>;
     }
 
@@ -110,9 +72,9 @@ class ApiClient {
         endpoint: string,
         config: RequestConfig = {}
     ): Promise<T> {
-        const { params, headers, isServer, ...restConfig } = config;
+        const { params, headers, ...restConfig } = config;
         const url = this.buildURL(endpoint, params);
-        const token = await this.getAuthToken(isServer);
+        const token = await this.getAuthToken();
 
         const defaultHeaders: HeadersInit = {
             'Content-Type': 'application/json',
@@ -124,7 +86,6 @@ class ApiClient {
             const response = await fetch(url, {
                 ...restConfig,
                 headers: defaultHeaders,
-                // Next.js específico: controlar caché
                 cache: restConfig.cache || 'no-store',
             });
 
@@ -138,7 +99,6 @@ class ApiClient {
         }
     }
 
-    // Métodos de conveniencia para CLIENT COMPONENTS
     async get<T>(
         endpoint: string,
         params?: Record<string, string | number | boolean>,
@@ -147,7 +107,7 @@ class ApiClient {
         return this.request<T>(endpoint, {
             method: 'GET',
             params,
-            ...options
+            ...options,
         });
     }
 
@@ -178,29 +138,22 @@ class ApiClient {
     async delete<T>(endpoint: string, options?: RequestConfig): Promise<T> {
         return this.request<T>(endpoint, {
             method: 'DELETE',
-            ...options
+            ...options,
         });
     }
 
-    // Métodos específicos para SERVER COMPONENTS (Server Actions)
-// Métodos específicos para SERVER COMPONENTS (Server Actions)
     async getServer<T>(
         endpoint: string,
         params?: Record<string, string | number | boolean>,
         cacheOptions?: { revalidate?: number | false; tags?: string[] }
     ): Promise<T> {
-        // Determinamos si queremos desactivar el caché
         const isNoCache = cacheOptions?.revalidate === false;
 
         return this.request<T>(endpoint, {
             method: 'GET',
             params,
-            isServer: true,
-            // Si revalidate es false, usamos 'no-store', si no, 'force-cache'
             cache: isNoCache ? 'no-store' : 'force-cache',
             next: {
-                // CORRECCIÓN: Si es 'no-store', NO debemos mandar 'revalidate: false'
-                // Mandamos undefined para que 'cache: no-store' tome prioridad sin conflictos.
                 revalidate: isNoCache ? undefined : cacheOptions?.revalidate,
                 tags: cacheOptions?.tags,
             },
@@ -211,7 +164,6 @@ class ApiClient {
         return this.request<T>(endpoint, {
             method: 'POST',
             body: JSON.stringify(data),
-            isServer: true,
             cache: 'no-store',
         });
     }
@@ -220,7 +172,6 @@ class ApiClient {
         return this.request<T>(endpoint, {
             method: 'PATCH',
             body: JSON.stringify(data),
-            isServer: true,
             cache: 'no-store',
         });
     }
@@ -228,12 +179,10 @@ class ApiClient {
     async deleteServer<T>(endpoint: string): Promise<T> {
         return this.request<T>(endpoint, {
             method: 'DELETE',
-            isServer: true,
             cache: 'no-store',
         });
     }
 
-    // Metodo para enviar FormData (archivos)
     async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
         const token = await this.getAuthToken();
         const url = this.buildURL(endpoint);
@@ -243,7 +192,6 @@ class ApiClient {
                 method: 'POST',
                 headers: {
                     ...(token && { Authorization: `Bearer ${token}` }),
-                    // No incluir Content-Type para FormData
                 },
                 body: formData,
                 cache: 'no-store',
@@ -258,43 +206,8 @@ class ApiClient {
             throw new Error('Unknown FormData upload error');
         }
     }
-
-    // Helper para guardar token después del login (solo cliente)
-    saveToken(token: string): void {
-        if (typeof window !== 'undefined') {
-            // Guardar en localStorage
-            localStorage.setItem('access_token', token);
-
-            // Guardar en cookie (httpOnly: false para que sea accesible desde JS)
-            // Max-age: 24 horas
-            document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
-        }
-    }
-
-    // Helper para limpiar token (solo cliente)
-    clearToken(): void {
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('access_token');
-            document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        }
-    }
-
-    // Helper para obtener token desde el cliente
-    getClientToken(): string | null {
-        if (typeof window !== 'undefined') {
-            const cookieToken = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('access_token='))
-                ?.split('=')[1];
-
-            return cookieToken || localStorage.getItem('access_token');
-        }
-        return null;
-    }
 }
 
-// Exportar instancia singleton
 export const apiClient = new ApiClient(BASE_URL);
 
-// Exportar también la clase
 export default ApiClient;

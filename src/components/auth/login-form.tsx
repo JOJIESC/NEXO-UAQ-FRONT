@@ -13,17 +13,17 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field"
-import {toast} from "sonner";
+import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner"
 import { Input } from "@/components/ui/input"
-import React, {useState} from "react";
-import {LoginDto, loginSchema} from "@/lib/schemas/auth.schemas";
-import {useForm} from 'react-hook-form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {loginAction} from "@/app/actions/auth";
-import {useRouter} from "next/navigation";
+import React, { useState } from "react";
+import Link from "next/link";
+import { LoginDto, loginSchema } from "@/lib/schemas/auth.schemas";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginAction } from "@/app/actions/auth";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
@@ -33,29 +33,26 @@ export function LoginForm({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false)
 
-  const {register,
-  handleSubmit, formState: {errors},} = useForm<LoginDto>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginDto>({
     resolver: zodResolver(loginSchema),
   })
 
   const onSubmit = async (data: LoginDto) => {
-
     setIsLoading(true)
-    toast.success('Cargando')
-    try{
+    const toastId = toast.loading('Iniciando sesión...')
+    try {
       const result = await loginAction(data.email, data.password)
 
-      if(result.success && result.access_token){
-
-        toast.success('!Bienvenido')
+      if (result.success) {
+        toast.success('¡Bienvenido!', { id: toastId })
         router.push("/dashboard")
         router.refresh()
       } else {
-        toast.error(result.error || 'Error al iniciar sesión')
+        toast.error(result.error || 'Error al iniciar sesión', { id: toastId })
       }
-    }catch(error){
-      toast.error('Error inesperado al iniciar sesion')
-    }finally {
+    } catch {
+      toast.error('Error inesperado al iniciar sesión', { id: toastId })
+    } finally {
       setIsLoading(false)
     }
   }
@@ -65,14 +62,14 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Bienvenido</CardTitle>
           <CardDescription>
-            Ingresa con tu cuenta de Google o Apple
+            Ingresa con tu correo y contraseña
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">Correo</FieldLabel>
                 <Input
                   id="email"
                   type="email"
@@ -81,33 +78,42 @@ export function LoginForm({
                   disabled={isLoading}
                   required
                 />
+                {errors.email && (
+                  <FieldDescription className="text-destructive">
+                    {errors.email.message}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
+                  <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+                  <Link
+                    href="/forgot-password"
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     ¿Olvidaste tu contraseña?
-                  </a>
+                  </Link>
                 </div>
-                <Input id="password" type="password" required disabled={isLoading} {...register('password')}/>
+                <Input id="password" type="password" required disabled={isLoading} {...register('password')} />
+                {errors.password && (
+                  <FieldDescription className="text-destructive">
+                    {errors.password.message}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <Button disabled={isLoading} type="submit">
                   {isLoading ? (
-                      <>
-                        {/* Agregamos un margen a la derecha (mr-2) y la animación de girar */}
-                        <Spinner className="mr-2 h-4 w-4 animate-spin" />
-                        Iniciando Sesión
-                      </>
+                    <>
+                      <Spinner className="mr-2 h-4 w-4 animate-spin" />
+                      Iniciando sesión
+                    </>
                   ) : (
-                      'Login'
+                    'Iniciar sesión'
                   )}
                 </Button>
                 <FieldDescription className="text-center">
-                  ¿No tienes una cuenta? <a href="/signup">Registrate</a>
+                  ¿No tienes una cuenta? <Link href="/signup">Regístrate</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -115,8 +121,8 @@ export function LoginForm({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        Al continuar, aceptas nuestros <Link href="/terms">Términos de servicio</Link>{" "}
+        y <Link href="/privacy">Política de privacidad</Link>.
       </FieldDescription>
     </div>
   )

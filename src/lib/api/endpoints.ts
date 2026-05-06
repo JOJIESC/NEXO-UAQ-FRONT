@@ -8,8 +8,8 @@ export const API_ENDPOINTS ={
         GET_ALL_PROJECTS: '/posts',
         GET_PROJECT_DETAILS: (id: string) => `/posts/${id}`,
         GET_MY_PROJECTS: '/posts/my-posts',
-        DELETE_PROJECT: (postId:string) => `/posts/${postId}`,
-
+        UPDATE_PROJECT: (id: string) => `/posts/${id}`,
+        DELETE_PROJECT: (id: string) => `/posts/${id}`,
     },
     APPLICATIONS: {
         APPLY: (postId: string) => `/applications/${postId}`,
