@@ -294,6 +294,7 @@ npm start  # corre en el puerto 3000 por default
 
 ## Documentación adicional
 
+- [`docs/manual-usuario.md`](docs/manual-usuario.md) — **Manual de usuario** (para estudiantes que usan la plataforma).
 - [`docs/architecture.md`](docs/architecture.md) — Decisiones de arquitectura, capas y patrones.
 - [`docs/api.md`](docs/api.md) — Referencia de endpoints del backend que consume el front.
 - [`CLAUDE.md`](CLAUDE.md) — Contexto para asistentes IA (Claude Code).
