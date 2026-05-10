@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Post } from '@/features/posts/types/posts.types';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 const TYPE_GRADIENTS: Record<string, string> = {
@@ -18,9 +19,9 @@ const STATUS_LABELS: Record<string, string> = {
 
 export interface PostCardProps {
     post: Post;
-    /** Texto adicional pequeño (ej: número de candidatos). Default: estado del post. */
+    /** Texto adicional opcional (ej: número de candidatos). Default: estado del post. */
     metric?: string;
-    /** Etiqueta secundaria (ej: "ver detalles"). Por default no se muestra nada. */
+    /** Etiqueta secundaria pequeña debajo del autor. */
     actionLabel?: string;
     className?: string;
 }
@@ -40,6 +41,9 @@ export function PostCard({ post, metric, actionLabel, className }: PostCardProps
     const authorName = post.author
         ? `${post.author.name ?? ''} ${post.author.lastname ?? ''}`.trim() || 'Anónimo'
         : 'Anónimo';
+    const authorInitials = post.author
+        ? `${post.author.name?.charAt(0) ?? ''}${post.author.lastname?.charAt(0) ?? ''}`.toUpperCase() || '?'
+        : '?';
 
     const metricLabel = metric ?? STATUS_LABELS[post.status ?? ''] ?? 'Activo';
 
@@ -64,12 +68,12 @@ export function PostCard({ post, metric, actionLabel, className }: PostCardProps
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.15),transparent_55%)] mix-blend-overlay" />
 
                     {/* Etiqueta superior derecha */}
-                    <div className="absolute right-4 top-3 text-right text-white">
-                        <p className="text-sm font-bold leading-tight tracking-tight drop-shadow">
+                    <div className="absolute right-4 top-3 text-right">
+                        <p className="text-sm font-bold leading-tight tracking-tight text-white drop-shadow">
                             {isProject ? 'Proyecto' : 'Taller'}
                         </p>
-                        <p className="text-xs font-medium text-white/85 line-clamp-1 max-w-[10rem]">
-                            {authorName}
+                        <p className="text-[11px] font-medium text-white/85 mt-0.5">
+                            {metricLabel}
                         </p>
                     </div>
                 </div>
@@ -86,18 +90,32 @@ export function PostCard({ post, metric, actionLabel, className }: PostCardProps
                         {post.description}
                     </p>
 
-                    <div className="mt-6 flex items-end justify-between">
-                        <div className="flex items-baseline gap-1.5">
+                    <div className="mt-6 flex items-end justify-between gap-3">
+                        {/* Fecha */}
+                        <div className="flex items-baseline gap-1.5 shrink-0">
                             <span className="text-3xl font-bold leading-none">{day}</span>
                             <span className="text-sm uppercase text-muted-foreground tracking-wider">
                                 {monthShort}
                             </span>
                         </div>
-                        <div className="text-right text-sm">
-                            <span className="font-semibold">{metricLabel}</span>
-                            {actionLabel && (
-                                <p className="text-xs text-muted-foreground">{actionLabel}</p>
-                            )}
+
+                        {/* Autor */}
+                        <div className="flex items-center gap-2 min-w-0">
+                            <Avatar className="h-8 w-8 shrink-0 border border-border">
+                                <AvatarFallback className="text-[11px] font-semibold bg-muted text-muted-foreground">
+                                    {authorInitials}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 text-right">
+                                <p className="text-sm font-semibold truncate leading-tight">
+                                    {authorName}
+                                </p>
+                                {actionLabel && (
+                                    <p className="text-[11px] text-muted-foreground truncate">
+                                        {actionLabel}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -17,7 +17,7 @@ export default function DashboardLayout({
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarInset className='dark:bg-gradient-to-r from-slate-900 to-slate-700 bg-gradient-to-r from-blue-200 to-cyan-700'>
+            <SidebarInset className="bg-gradient-to-br from-background via-background to-muted/40 dark:to-muted/20">
                 <header className="flex h-16 shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
