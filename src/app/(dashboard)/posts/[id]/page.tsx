@@ -1,31 +1,37 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
-    Bell,
-    UserPlus2,
-    CheckCircle2,
-    Calendar,
-    Eye,
-    Globe2,
-    Users,
+    ArrowRight,
     BadgeCheck,
+    Calendar,
+    CheckCircle2,
+    GraduationCap,
+    Lightbulb,
+    UserPlus2,
+    Users,
 } from 'lucide-react';
 
 import { getProjectDetailsAction } from '@/app/actions/posts';
 import { getSessionUser } from '@/app/actions/auth';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { ApplyButton } from '@/components/shared/ApplyButton';
+import { cn } from '@/lib/utils';
 
-const TYPE_BANNERS: Record<string, string> = {
-    PROJECT:
-        'bg-[radial-gradient(ellipse_at_30%_50%,#ff8a3d_0%,transparent_60%),radial-gradient(ellipse_at_70%_60%,#ff3b3b_0%,transparent_55%),linear-gradient(135deg,#7a1414,#ff5722)]',
-    WORKSHOP:
-        'bg-[radial-gradient(ellipse_at_30%_50%,#3dd2ff_0%,transparent_60%),radial-gradient(ellipse_at_70%_60%,#22d3aa_0%,transparent_55%),linear-gradient(135deg,#0e2c5c,#0ea5e9)]',
-};
+const TYPE_META = {
+    PROJECT: {
+        label: 'Proyecto',
+        icon: Lightbulb,
+        iconBg: 'bg-orange-100 dark:bg-orange-500/15',
+        iconText: 'text-orange-600 dark:text-orange-400',
+    },
+    WORKSHOP: {
+        label: 'Taller',
+        icon: GraduationCap,
+        iconBg: 'bg-sky-100 dark:bg-sky-500/15',
+        iconText: 'text-sky-600 dark:text-sky-400',
+    },
+} as const;
 
 const STATUS_LABELS: Record<string, string> = {
     OPEN: 'Abierto',
@@ -49,24 +55,47 @@ export default async function ProjectDetailsPage({
     if (!response.success || !response.data) notFound();
 
     const project = response.data;
-    const isOwner = sessionUser && project.author?.id === sessionUser.id;
-    const authorInitials = `${project.author?.name?.charAt(0) ?? ''}${project.author?.lastname?.charAt(0) ?? ''}`.toUpperCase();
-    const createdLabel = project.createdAt
+    const meta = TYPE_META[project.type] ?? TYPE_META.PROJECT;
+    const TypeIcon = meta.icon;
+
+    const isOwner = !!sessionUser && project.author?.id === sessionUser.id;
+    const authorName = project.author
+        ? `${project.author.name ?? ''} ${project.author.lastname ?? ''}`.trim() || 'Anónimo'
+        : 'Anónimo';
+    const authorInitials = project.author
+        ? `${project.author.name?.charAt(0) ?? ''}${project.author.lastname?.charAt(0) ?? ''}`.toUpperCase() || '?'
+        : '?';
+
+    const dateLong = project.createdAt
         ? new Date(project.createdAt).toLocaleDateString('es-MX', {
-              month: 'short',
+              day: 'numeric',
+              month: 'long',
               year: 'numeric',
           })
         : '—';
+    const dateShort = project.createdAt
+        ? new Date(project.createdAt).toLocaleDateString('es-MX', {
+              day: 'numeric',
+              month: 'short',
+          })
+        : '—';
+    const day = project.createdAt
+        ? String(new Date(project.createdAt).getDate()).padStart(2, '0')
+        : '--';
+    const monthShort = project.createdAt
+        ? new Date(project.createdAt)
+              .toLocaleDateString('es-MX', { month: 'short' })
+              .replace('.', '')
+              .toLowerCase()
+        : '';
+
     const statusLabel = STATUS_LABELS[project.status ?? ''] ?? 'Activo';
 
     return (
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0 w-full max-w-6xl mx-auto">
-            {/* Breadcrumb local */}
+            {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
-                <Link
-                    href="/dashboard"
-                    className="hover:text-foreground transition-colors"
-                >
+                <Link href="/dashboard" className="hover:text-foreground transition-colors">
                     Publicaciones
                 </Link>
                 <span>/</span>
@@ -75,179 +104,159 @@ export default async function ProjectDetailsPage({
                 </span>
             </div>
 
-            {/* Hero banner */}
-            <div
-                className={`relative h-56 sm:h-72 w-full overflow-hidden rounded-3xl ${TYPE_BANNERS[project.type] ?? TYPE_BANNERS.PROJECT}`}
-            >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.45),transparent_55%)] mix-blend-overlay" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                {/* Tipo top-right */}
-                <div className="absolute right-5 top-5">
-                    <Badge className="bg-white/20 backdrop-blur text-white border-white/30 hover:bg-white/30">
-                        {project.type === 'PROJECT' ? 'Proyecto' : 'Taller'}
-                    </Badge>
-                </div>
-
-                {/* Título sobre el banner */}
-                <div className="absolute bottom-5 left-6 right-6 text-white drop-shadow-lg">
-                    <h1 className="text-2xl sm:text-4xl font-bold leading-tight">
-                        {project.title}
-                    </h1>
-                </div>
-            </div>
-
-            {/* Layout main / sidebar */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                {/* Columna principal — Tabs */}
-                <div>
-                    <Tabs defaultValue="feed" className="w-full">
-                        <TabsList>
-                            <TabsTrigger value="feed">Feed</TabsTrigger>
-                            <TabsTrigger value="description">Descripción</TabsTrigger>
-                            <TabsTrigger value="members">Miembros</TabsTrigger>
-                        </TabsList>
-
-                        {/* Feed (placeholder) */}
-                        <TabsContent value="feed" className="mt-6">
-                            <div className="space-y-3">
-                                <ActivityRow
-                                    icon={<Bell className="h-4 w-4" />}
-                                    type="info"
-                                    title="Publicación creada"
-                                    detail={`${createdLabel}`}
-                                    label="Update"
-                                />
-                                <ActivityRow
-                                    icon={<UserPlus2 className="h-4 w-4" />}
-                                    type="muted"
-                                    title="Esperando candidatos"
-                                    detail="Los postulantes aparecerán aquí"
-                                    label="Pendiente"
-                                />
-                                <ActivityRow
-                                    icon={<CheckCircle2 className="h-4 w-4" />}
-                                    type="muted"
-                                    title="Sin candidatos aceptados"
-                                    detail="Cuando aceptes, lo verás aquí"
-                                    label="Acción"
-                                />
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-6">
-                                El feed mostrará la actividad real una vez que la API de notificaciones esté lista.
-                            </p>
-                        </TabsContent>
-
-                        {/* Descripción */}
-                        <TabsContent value="description" className="mt-6">
-                            <div className="rounded-3xl border bg-card p-6">
-                                <h3 className="text-lg font-semibold mb-3">
-                                    Descripción del {project.type === 'PROJECT' ? 'proyecto' : 'taller'}
-                                </h3>
-                                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-                                    {project.description}
-                                </p>
-                            </div>
-                        </TabsContent>
-
-                        {/* Miembros (placeholder, link a candidates) */}
-                        <TabsContent value="members" className="mt-6">
-                            <div className="rounded-3xl border bg-card p-6 flex flex-col items-center text-center gap-3">
-                                <Users className="h-8 w-8 text-muted-foreground" />
-                                <p className="font-medium">Gestión de miembros</p>
-                                <p className="text-sm text-muted-foreground max-w-md">
-                                    {isOwner
-                                        ? 'Como propietario, puedes ver los candidatos y aceptar/rechazar postulaciones.'
-                                        : 'Solo el propietario puede ver y gestionar los miembros de esta publicación.'}
-                                </p>
-                                {isOwner && (
-                                    <Button asChild className="mt-2">
-                                        <Link href={`/posts/${project.id}/candidates`}>
-                                            <Users className="mr-2 h-4 w-4" />
-                                            Ver candidatos
-                                        </Link>
-                                    </Button>
-                                )}
-                            </div>
-                        </TabsContent>
-                    </Tabs>
-                </div>
-
-                {/* Sidebar derecha */}
-                <aside className="space-y-4">
-                    {/* Card autor + visibilidad */}
-                    <div className="rounded-3xl border bg-card p-5 space-y-4">
-                        <div>
-                            <h2 className="font-semibold text-base">Sobre la publicación</h2>
-                            <p className="text-sm text-muted-foreground line-clamp-3 mt-1">
-                                {project.description}
+            {/* ──────── BENTO GRID ──────── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 auto-rows-min">
+                {/* Hero card — ocupa 2 cols en grandes */}
+                <article className="sm:col-span-2 rounded-3xl border bg-card p-6 shadow-sm">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-2xl sm:text-3xl font-bold leading-tight">
+                                {project.title}
+                            </h1>
+                            <p className="text-sm text-muted-foreground mt-2">
+                                {meta.label} · {dateLong}
                             </p>
                         </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            <Badge variant="outline" className="gap-1.5">
-                                <Globe2 className="h-3 w-3" /> Público
-                            </Badge>
-                            <Badge variant="outline" className="gap-1.5">
-                                <BadgeCheck className="h-3 w-3" /> Creado {createdLabel}
-                            </Badge>
+                        <div
+                            className={cn(
+                                'shrink-0 flex h-14 w-14 items-center justify-center rounded-2xl',
+                                meta.iconBg,
+                                meta.iconText,
+                            )}
+                        >
+                            <TypeIcon className="h-7 w-7" />
                         </div>
-
-                        <Separator />
-
-                        <Stat
-                            icon={<Eye className="h-4 w-4" />}
-                            label="Estado"
-                            value={statusLabel}
-                        />
-                        {project.author && (
-                            <Stat
-                                icon={
-                                    <Avatar className="h-6 w-6">
-                                        <AvatarFallback className="text-[10px] font-semibold">
-                                            {authorInitials || '?'}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                }
-                                label="Autor"
-                                value={`${project.author.name} ${project.author.lastname}`.trim()}
-                            />
-                        )}
-                        <Stat
-                            icon={<Calendar className="h-4 w-4" />}
-                            label="Fecha de creación"
-                            value={
-                                project.createdAt
-                                    ? new Date(project.createdAt).toLocaleDateString('es-MX')
-                                    : '—'
-                            }
-                        />
                     </div>
 
-                    {/* Card de acción */}
-                    {!isOwner ? (
-                        <div className="rounded-3xl border bg-card p-5 space-y-3">
-                            <h3 className="font-semibold">¿Te interesa?</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Postúlate y el dueño verá tu solicitud.
+                    <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <MiniStat label="Categoría" value={meta.label} icon={<TypeIcon className="h-4 w-4" />} />
+                        <MiniStat label="Estado" value={statusLabel} icon={<BadgeCheck className="h-4 w-4" />} />
+                    </div>
+                </article>
+
+                {/* Fecha card — número grande */}
+                <article className="rounded-3xl border bg-card p-6 shadow-sm flex flex-col">
+                    <div className="flex items-center justify-between gap-3">
+                        <div>
+                            <p className="text-5xl font-bold leading-none">{day}</p>
+                            <p className="text-sm text-muted-foreground mt-1 capitalize">
+                                {monthShort}
                             </p>
-                            <ApplyButton postId={project.id} />
                         </div>
-                    ) : (
-                        <div className="rounded-3xl border bg-card p-5 space-y-3">
-                            <h3 className="font-semibold">Eres el dueño</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Gestiona los candidatos que se postulen.
+                        <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                        </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-auto pt-4">
+                        Publicado el {dateShort}
+                    </p>
+                </article>
+
+                {/* Descripción — full width en sm, 2 cols en lg */}
+                <article className="sm:col-span-2 rounded-3xl border bg-card p-6 shadow-sm">
+                    <h2 className="text-base font-bold mb-3">
+                        Descripción del {project.type === 'PROJECT' ? 'proyecto' : 'taller'}
+                    </h2>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                        {project.description}
+                    </p>
+                </article>
+
+                {/* Autor */}
+                <article className="rounded-3xl border bg-card p-5 shadow-sm">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+                        Autor
+                    </p>
+                    <div className="flex items-center gap-3">
+                        <Avatar className="h-12 w-12">
+                            <AvatarFallback className="text-sm font-semibold bg-primary/10 text-primary">
+                                {authorInitials}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                            <p className="font-semibold truncate">{authorName}</p>
+                            {project.author?.email && (
+                                <p className="text-xs text-muted-foreground truncate">
+                                    {project.author.email}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </article>
+
+                {/* Actividad — span 2 cols */}
+                <article className="sm:col-span-2 rounded-3xl border bg-card p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-base font-bold">Actividad reciente</h2>
+                        <span className="text-xs text-muted-foreground">Últimas acciones</span>
+                    </div>
+                    <ul className="space-y-2">
+                        <ActivityRow
+                            color="bg-primary/10 text-primary"
+                            icon={<BadgeCheck className="h-4 w-4" />}
+                            title="Publicación creada"
+                            detail={dateLong}
+                        />
+                        <ActivityRow
+                            color="bg-muted text-muted-foreground"
+                            icon={<UserPlus2 className="h-4 w-4" />}
+                            title="Esperando candidatos"
+                            detail="Las postulaciones aparecerán aquí"
+                        />
+                        <ActivityRow
+                            color="bg-muted text-muted-foreground"
+                            icon={<CheckCircle2 className="h-4 w-4" />}
+                            title="Sin candidatos aceptados"
+                            detail="Cuando aceptes a alguien, lo verás aquí"
+                        />
+                    </ul>
+                </article>
+
+                {/* CTA — Aplica o Ver candidatos */}
+                <article
+                    className={cn(
+                        'rounded-3xl p-6 shadow-sm flex flex-col gap-3',
+                        isOwner
+                            ? 'bg-primary text-primary-foreground'
+                            : 'border bg-card',
+                    )}
+                >
+                    {isOwner ? (
+                        <>
+                            <div className="flex items-center justify-between">
+                                <p className="text-xs uppercase tracking-wider opacity-80">
+                                    Eres el dueño
+                                </p>
+                                <Users className="h-5 w-5 opacity-80" />
+                            </div>
+                            <h3 className="text-xl font-bold leading-tight">
+                                Gestiona tus candidatos
+                            </h3>
+                            <p className="text-sm opacity-90 mb-2">
+                                Acepta o rechaza las postulaciones que has recibido.
                             </p>
-                            <Button asChild className="w-full">
+                            <Button asChild variant="secondary" className="mt-auto">
                                 <Link href={`/posts/${project.id}/candidates`}>
-                                    <Users className="mr-2 h-4 w-4" />
                                     Ver candidatos
+                                    <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
-                        </div>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                                ¿Te interesa?
+                            </p>
+                            <h3 className="text-xl font-bold leading-tight">
+                                Postúlate a este {meta.label.toLowerCase()}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mb-2">
+                                El dueño verá tu solicitud y decidirá si te acepta.
+                            </p>
+                            <ApplyButton postId={project.id} />
+                        </>
                     )}
-                </aside>
+                </article>
             </div>
         </div>
     );
@@ -255,41 +264,7 @@ export default async function ProjectDetailsPage({
 
 // ───────── Helpers de presentación ─────────
 
-function ActivityRow({
-    icon,
-    type,
-    title,
-    detail,
-    label,
-}: {
-    icon: React.ReactNode;
-    type: 'info' | 'muted';
-    title: string;
-    detail: string;
-    label: string;
-}) {
-    const colorByType: Record<string, string> = {
-        info: 'bg-primary/10 text-primary',
-        muted: 'bg-muted text-muted-foreground',
-    };
-
-    return (
-        <div className="flex items-center gap-3 rounded-2xl border bg-card p-4">
-            <div
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${colorByType[type]}`}
-            >
-                {icon}
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{title}</p>
-                <p className="text-xs text-muted-foreground truncate">{detail}</p>
-            </div>
-            <span className="text-xs text-muted-foreground shrink-0">{label}</span>
-        </div>
-    );
-}
-
-function Stat({
+function MiniStat({
     icon,
     label,
     value,
@@ -299,14 +274,42 @@ function Stat({
     value: string;
 }) {
     return (
-        <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <span>{icon}</span>
-                <span>{label}</span>
+        <div className="rounded-2xl bg-muted/50 dark:bg-muted/30 p-3 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-background text-muted-foreground border">
+                {icon}
             </div>
-            <span className="text-sm font-medium text-right truncate max-w-[60%]">
-                {value}
-            </span>
+            <div className="min-w-0">
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground leading-tight">
+                    {label}
+                </p>
+                <p className="text-sm font-semibold truncate leading-tight mt-0.5">
+                    {value}
+                </p>
+            </div>
         </div>
+    );
+}
+
+function ActivityRow({
+    color,
+    icon,
+    title,
+    detail,
+}: {
+    color: string;
+    icon: React.ReactNode;
+    title: string;
+    detail: string;
+}) {
+    return (
+        <li className="flex items-center gap-3 rounded-2xl bg-muted/40 dark:bg-muted/25 p-3">
+            <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full', color)}>
+                {icon}
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{title}</p>
+                <p className="text-xs text-muted-foreground truncate">{detail}</p>
+            </div>
+        </li>
     );
 }
