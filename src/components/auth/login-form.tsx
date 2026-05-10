@@ -45,7 +45,7 @@ export function LoginForm({
 
       if (result.success) {
         toast.success('¡Bienvenido!', { id: toastId })
-        router.push("/dashboard")
+        router.push("/home")
         router.refresh()
       } else {
         toast.error(result.error || 'Error al iniciar sesión', { id: toastId })

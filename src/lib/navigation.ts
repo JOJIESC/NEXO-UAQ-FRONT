@@ -4,41 +4,47 @@ import {
     LayoutDashboard,
     Search,
     StickyNote,
-} from "lucide-react";
+    Sparkles,
+} from 'lucide-react';
 
 export const navItems = {
     user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
+        name: 'shadcn',
+        email: 'm@example.com',
+        avatar: '/avatars/shadcn.jpg',
     },
     navMain: [
         {
-            title: "Dashboard",
-            url: "/dashboard",
-            icon: LayoutDashboard,
+            title: 'Inicio',
+            url: '/home',
+            icon: Sparkles,
             isActive: true,
         },
         {
-            title: "Mis posts",
-            url: "/posts/my-posts",
+            title: 'Dashboard',
+            url: '/dashboard',
+            icon: LayoutDashboard,
+        },
+        {
+            title: 'Mis posts',
+            url: '/posts/my-posts',
             icon: StickyNote,
         },
         {
-            title: "Buscar",
-            url: "/search",
+            title: 'Buscar',
+            url: '/search',
             icon: Search,
         },
     ],
     navSecondary: [
         {
-            title: "Settings",
-            url: "/settings",
+            title: 'Settings',
+            url: '/settings',
             icon: Settings2,
         },
         {
-            title: "About",
-            url: "/about",
+            title: 'About',
+            url: '/about',
             icon: Info,
         },
     ],

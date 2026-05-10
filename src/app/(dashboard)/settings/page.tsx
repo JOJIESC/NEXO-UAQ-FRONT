@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { Palette, User as UserIcon, Lock, Bell, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Palette, Paintbrush, User as UserIcon, Lock, Bell, ShieldAlert, ArrowRight } from 'lucide-react';
 import { getSessionUser, logoutAction } from '@/app/actions/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ThemeSelector } from '@/components/settings/theme-selector';
+import { ThemePresetSelector } from '@/components/settings/theme-preset-selector';
 
 export default async function SettingsPage() {
     const user = await getSessionUser();
@@ -34,6 +35,30 @@ export default async function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                     <ThemeSelector />
+                </CardContent>
+            </Card>
+
+            {/* Tema de color (presets) */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Paintbrush className="h-5 w-5 text-muted-foreground" />
+                        Paleta de color
+                    </CardTitle>
+                    <CardDescription>
+                        Cambia el color de acento de la interfaz. Los presets están inspirados en{' '}
+                        <a
+                            href="https://tweakcn.com/editor/theme"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-foreground underline underline-offset-2"
+                        >
+                            tweakcn
+                        </a>.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ThemePresetSelector />
                 </CardContent>
             </Card>
 

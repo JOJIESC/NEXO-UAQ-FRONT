@@ -49,12 +49,12 @@ export function CreatePostDialog() {
 
             if (result.success) {
                 toast.success('¡Post creado exitosamente!')
-                setOpen(false) // Cerramos el modal
-                window.location.reload()
+                setOpen(false)
+                router.refresh()
             } else {
                 toast.error(result.error || 'Error al crear el post')
             }
-        } catch (error) {
+        } catch {
             toast.error('Ocurrió un error inesperado')
         } finally {
             setIsLoading(false)
