@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
-import { Bell, BellOff, Check, CheckCheck, ExternalLink } from 'lucide-react';
+import { Bell, BellOff, Check, CheckCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -55,10 +55,10 @@ export function NotificationsBell() {
     }, [open, loadList]);
 
     function handleMarkRead(n: Notification) {
-        if (n.readAt) return;
+        if (n.isRead) return;
         // Optimistic update
         setItems((prev) =>
-            prev.map((it) => (it.id === n.id ? { ...it, readAt: new Date().toISOString() } : it)),
+            prev.map((it) => (it.id === n.id ? { ...it, isRead: true } : it)),
         );
         setUnreadCount((c) => Math.max(0, c - 1));
 
@@ -74,7 +74,7 @@ export function NotificationsBell() {
 
     async function handleMarkAllRead() {
         const had = unreadCount;
-        setItems((prev) => prev.map((it) => ({ ...it, readAt: it.readAt ?? new Date().toISOString() })));
+        setItems((prev) => prev.map((it) => ({ ...it, isRead: true })));
         setUnreadCount(0);
 
         const result = await markAllNotificationsReadAction();
@@ -159,17 +159,18 @@ function NotificationItem({
     notification: Notification;
     onMarkRead: () => void;
 }) {
-    const isUnread = !n.readAt;
+    const isUnread = !n.isRead;
     const date = new Date(n.createdAt);
     const dateLabel = formatRelative(date);
 
-    const typeStyles = {
+    const typeStyles: Record<string, string> = {
         APPLICATION_RECEIVED: 'bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400',
         APPLICATION_ACCEPTED:
             'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400',
         APPLICATION_REJECTED:
             'bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400',
     };
+    const typeStyle = typeStyles[n.type] ?? 'bg-muted text-muted-foreground';
 
     const content = (
         <div
@@ -195,13 +196,13 @@ function NotificationItem({
                             {n.title}
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                            {n.message}
+                            {n.body}
                         </p>
                     </div>
                     <span
                         className={cn(
                             'shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
-                            typeStyles[n.type],
+                            typeStyle,
                         )}
                     >
                         {n.type === 'APPLICATION_RECEIVED'
@@ -231,11 +232,11 @@ function NotificationItem({
         </div>
     );
 
-    if (n.postId) {
+    if (n.referenceId) {
         return (
             <li>
                 <Link
-                    href={`/posts/${n.postId}`}
+                    href={`/posts/${n.referenceId}`}
                     className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     onClick={() => isUnread && onMarkRead()}
                 >

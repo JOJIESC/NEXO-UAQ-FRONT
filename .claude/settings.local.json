@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm view *)",
+      "Bash(npx --no-install tsc --noEmit)",
+      "Bash(git fetch *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(python \"C:\\\\Users\\\\j_esc\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\202c73f2-2e11-43ee-ad07-a33b42500944\\\\43dece99-ed15-4e03-bb1a-e6fc4e1884fa\\\\skills\\\\docx\\\\scripts\\\\office\\\\validate.py\" docs/manual-usuario.docx)",
+      "Bash(pip install *)",
+      "Bash(git checkout *)",
+      "Bash(git ls-remote *)",
+      "Bash(command -v gh)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(gh pr *)",
+      "Bash(gh api *)",
+      "Bash(git rebase *)",
+      "Bash(git pull *)",
+      "Bash(git push *)",
+      "Read(//c/tmp/backend-work/NexoUAQ/**)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(ls -la \"C:\\\\Users\\\\j_esc\\\\AppData\\\\Local\\\\Temp\\\\backend-work\\\\NexoUAQ\\\\src\\\\users\\\\users.controller.ts\" 2>&1 | head -3)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\j_esc\\\\AppData\\\\Local\\\\Temp\\\\backend-work\\\\NexoUAQ\\\\src\\\\notifications\\\\dto\" \"C:\\\\Users\\\\j_esc\\\\AppData\\\\Local\\\\Temp\\\\backend-work\\\\NexoUAQ\\\\src\\\\notifications\\\\entities\" \"C:\\\\Users\\\\j_esc\\\\AppData\\\\Local\\\\Temp\\\\backend-work\\\\NexoUAQ\\\\migrations\" 2>&1 && echo OK)",
+      "Bash(cat /tmp/backend-work/NexoUAQ/src/main.ts 2>&1)",
+      "Bash(curl -sI -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\" --max-time 10 https://nexo-uaq-back.vercel.app)",
+      "Bash(curl -s --max-time 10 https://nexo-uaq-back.vercel.app/users)",
+      "Bash(curl -sI --max-time 10 https://nexo-uaq-back.vercel.app/auth/login)",
+      "Bash(cat /tmp/backend-work/NexoUAQ/nest-cli.json /tmp/backend-work/NexoUAQ/tsconfig.json /tmp/backend-work/NexoUAQ/tsconfig.build.json 2>&1)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\j_esc\\\\AppData\\\\Local\\\\Temp\\\\backend-work\\\\NexoUAQ\\\\api\" && echo OK)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" --max-time 10 https://nexo-uaq-back.vercel.app/)",
+      "Bash(curl -s --max-time 10 https://nexo-uaq-back.vercel.app/users -o /tmp/users.json -w \"HTTP %{http_code}\\\\n\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s --max-time 10 https://nexo-uaq-back.vercel.app/notifications/unread-count -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" --max-time 10 https://nexo-uaq-back.vercel.app/docs)",
+      "Bash(curl -s -i --max-time 15 https://nexo-uaq-back.vercel.app/notifications/unread-count)"
+    ]
+  }
+}
