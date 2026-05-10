@@ -61,7 +61,7 @@ export default function MyPostsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {projects.map((project) => (
                         <div key={project.id} className="flex flex-col gap-2">
-                            <PostCard post={project} actionLabel="Tus posts" />
+                            <PostCard post={project} footerHint="Tu publicación" />
                             <div className="flex gap-2">
                                 <Button asChild variant="outline" size="sm" className="flex-1">
                                     <Link href={`/posts/${project.id}`}>
