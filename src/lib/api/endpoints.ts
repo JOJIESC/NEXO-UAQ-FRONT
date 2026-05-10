@@ -1,4 +1,4 @@
-export const API_ENDPOINTS ={
+export const API_ENDPOINTS = {
     AUTH: {
         LOGIN: '/auth/login',
     },
@@ -17,11 +17,19 @@ export const API_ENDPOINTS ={
         PATCH_ACCEPT_REQUEST: (id: string) => `/applications/${id}/accept`,
         PATCH_REJECT_REQUEST: (id: string) => `/applications/${id}/reject`,
     },
-    USERS:{
+    USERS: {
         CREATE_USER: '/users',
         GET_USERS: '/users',
         GET_USER_BY_ID: (id: string) => `/users/${id}`,
-        ME: '/users/me'
+        ME: '/users/me',
+        UPDATE_ME: '/users/me',
+        CHANGE_PASSWORD: '/users/me/password',
+        DELETE_ME: '/users/me',
     },
-
-}
+    NOTIFICATIONS: {
+        LIST: '/notifications',
+        UNREAD_COUNT: '/notifications/unread-count',
+        MARK_READ: (id: string) => `/notifications/${id}/read`,
+        MARK_ALL_READ: '/notifications/read-all',
+    },
+};

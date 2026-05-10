@@ -1,12 +1,13 @@
-import Link from 'next/link';
-import { Palette, Paintbrush, User as UserIcon, Lock, Bell, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Palette, Paintbrush, User as UserIcon, Lock, ShieldAlert } from 'lucide-react';
 import { getSessionUser, logoutAction } from '@/app/actions/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ThemeSelector } from '@/components/settings/theme-selector';
 import { ThemePresetSelector } from '@/components/settings/theme-preset-selector';
+import { ChangePasswordForm } from '@/components/settings/change-password-form';
+import { EditProfileForm } from '@/components/settings/edit-profile-form';
+import { DeleteAccountDialog } from '@/components/settings/delete-account-dialog';
 
 export default async function SettingsPage() {
     const user = await getSessionUser();
@@ -70,35 +71,17 @@ export default async function SettingsPage() {
                         Perfil
                     </CardTitle>
                     <CardDescription>
-                        Administra la información que la comunidad ve sobre ti.
+                        Administra la información que la comunidad ve sobre ti. Tu correo no se puede cambiar.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/30 p-4 rounded-lg">
-                        <div>
-                            <p className="text-sm text-muted-foreground mb-1">Nombre</p>
-                            <p className="font-medium">{user.name} {user.lastname}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground mb-1">Correo</p>
-                            <p className="font-medium">{user.email}</p>
-                        </div>
-                        <div className="md:col-span-2">
-                            <p className="text-sm text-muted-foreground mb-1">Bio</p>
-                            <p className="font-medium text-sm">
-                                {user.bio || <span className="italic text-muted-foreground">Sin biografía</span>}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <Button variant="outline" asChild>
-                            <Link href="/account">
-                                Ver perfil completo
-                                <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                        </Button>
-                        <Badge variant="secondary">Edición próximamente</Badge>
-                    </div>
+                <CardContent>
+                    <EditProfileForm
+                        user={{
+                            name: user.name,
+                            lastname: user.lastname,
+                            bio: user.bio,
+                        }}
+                    />
                 </CardContent>
             </Card>
 
@@ -107,32 +90,14 @@ export default async function SettingsPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Lock className="h-5 w-5 text-muted-foreground" />
-                        Seguridad
+                        Cambiar contraseña
                     </CardTitle>
                     <CardDescription>
-                        Tu sesión se mantiene activa por 24 horas. Después tendrás que iniciar sesión de nuevo.
+                        Tu sesión se mantiene activa por 24 horas. Cambiar la contraseña no cierra sesiones existentes.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">Cambiar contraseña</p>
-                    <Badge variant="secondary">Próximamente</Badge>
-                </CardContent>
-            </Card>
-
-            {/* Notificaciones */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Bell className="h-5 w-5 text-muted-foreground" />
-                        Notificaciones
-                    </CardTitle>
-                    <CardDescription>
-                        Avísame cuando alguien se postule a mis publicaciones o cuando cambie el estado de mis solicitudes.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">Configurar preferencias</p>
-                    <Badge variant="secondary">Próximamente</Badge>
+                <CardContent>
+                    <ChangePasswordForm />
                 </CardContent>
             </Card>
 
@@ -153,19 +118,25 @@ export default async function SettingsPage() {
                     <div className="flex items-center justify-between gap-4">
                         <div>
                             <p className="font-medium">Cerrar sesión</p>
-                            <p className="text-sm text-muted-foreground">Saldrás de NEXO UAQ en este navegador.</p>
+                            <p className="text-sm text-muted-foreground">
+                                Saldrás de NEXO UAQ en este navegador.
+                            </p>
                         </div>
                         <form action={logoutAction}>
-                            <Button type="submit" variant="destructive">Cerrar sesión</Button>
+                            <Button type="submit" variant="outline">
+                                Cerrar sesión
+                            </Button>
                         </form>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between gap-4">
                         <div>
                             <p className="font-medium">Eliminar cuenta</p>
-                            <p className="text-sm text-muted-foreground">Borra permanentemente tu cuenta y todas tus publicaciones.</p>
+                            <p className="text-sm text-muted-foreground">
+                                Tus posts y postulaciones permanecen visibles, pero tu perfil queda oculto.
+                            </p>
                         </div>
-                        <Badge variant="secondary">Próximamente</Badge>
+                        <DeleteAccountDialog />
                     </div>
                 </CardContent>
             </Card>
