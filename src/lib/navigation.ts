@@ -1,20 +1,10 @@
 import {
-    Frame,
-    Map,
-    PieChart,
-    Send,
     Settings2,
     Info,
     LayoutDashboard,
-    Signature,
     Search,
-    StickyNote
+    StickyNote,
 } from "lucide-react";
-
-// FETCH PARA VER PROYECTOS ACTIVOS Y LISTAR EN PROJECTS
-// FETCH PARA DATOS DE USUARIO (NAME, LASTNAME, EMAIL)
-
-
 
 export const navItems = {
     user: {
@@ -32,30 +22,25 @@ export const navItems = {
         {
             title: "Mis posts",
             url: "/posts/my-posts",
-            icon: StickyNote
-        }
+            icon: StickyNote,
+        },
+        {
+            title: "Buscar",
+            url: "/search",
+            icon: Search,
+        },
     ],
     navSecondary: [
         {
             title: "Settings",
-            url: "#",
+            url: "/settings",
             icon: Settings2,
         },
         {
-            title: "Feedback",
-            url: "#",
-            icon: Send,
-        },
-        {
             title: "About",
-            url: "#",
-            icon: Info
+            url: "/about",
+            icon: Info,
         },
-        {
-            title: "Search",
-            url: "#",
-            icon: Search
-        }
     ],
     projects: [],
-}
+};
