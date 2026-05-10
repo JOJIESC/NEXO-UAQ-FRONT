@@ -1,17 +1,10 @@
 "use client"
 
 import * as React from "react"
-import {
-  BookOpen,
-  CirclePlus,
-  StickyNote,
-  Folder, // Asegúrate de importar Folder
-  School,
-  type LucideIcon // <--- 1. Importamos el tipo para los íconos
-} from "lucide-react"
+import Link from "next/link"
+import { School } from "lucide-react"
 
 import { NavMain } from "@/components/layout/nav-main"
-import { NavProjects } from "@/components/layout/nav-projects"
 import { NavSecondary } from "@/components/layout/nav-secondary"
 import { NavUser } from "@/components/layout/nav-user"
 import {
@@ -38,14 +31,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
-                <a href="/dashboard">
+                <Link href="/home">
                   <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                     <School className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">NEXO UAQ</span>
                   </div>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

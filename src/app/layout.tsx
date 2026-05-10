@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ThemePresetProvider } from "@/providers/ThemePresetProvider";
 import { getSessionUser } from "@/app/actions/auth";
 
 const geistSans = Geist({
@@ -38,12 +39,14 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <AuthProvider user={user}>
-                <TooltipProvider>
-                    {children}
-                </TooltipProvider>
-                <Toaster />
-            </AuthProvider>
+            <ThemePresetProvider>
+                <AuthProvider user={user}>
+                    <TooltipProvider>
+                        {children}
+                    </TooltipProvider>
+                    <Toaster />
+                </AuthProvider>
+            </ThemePresetProvider>
         </ThemeProvider>
         </body>
         </html>

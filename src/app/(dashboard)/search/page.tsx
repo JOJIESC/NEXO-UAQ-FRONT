@@ -2,19 +2,15 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { Search as SearchIcon, X, Eye } from 'lucide-react';
+import { Search as SearchIcon, X } from 'lucide-react';
 
 import { getAllProjectsAction } from '@/app/actions/posts';
 import { Post } from '@/features/posts/types/posts.types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { PostCard } from '@/components/posts/post-card';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Spinner } from '@/components/ui/spinner';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ApplyButton } from '@/components/shared/ApplyButton';
 import { toast } from 'sonner';
 
 type Filter = 'ALL' | 'PROJECT' | 'WORKSHOP';
@@ -154,9 +150,9 @@ function SearchPageInner() {
             ) : filtered.length === 0 ? (
                 <EmptyState query={query} filter={filter} hasPosts={posts.length > 0} />
             ) : (
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {filtered.map((post) => (
-                        <SearchResultCard key={post.id} post={post} query={query} />
+                        <PostCard key={post.id} post={post} />
                     ))}
                 </div>
             )}
@@ -202,79 +198,4 @@ function EmptyState({ query, filter, hasPosts }: { query: string; filter: Filter
     );
 }
 
-function SearchResultCard({ post, query }: { post: Post; query: string }) {
-    const authorInitials = `${post.author?.name?.charAt(0) ?? ''}${post.author?.lastname?.charAt(0) ?? ''}`.toUpperCase();
-
-    return (
-        <Card className="transition-all hover:shadow-md">
-            <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                        <Avatar className="h-9 w-9 shrink-0">
-                            <AvatarFallback className="text-xs font-semibold bg-secondary text-secondary-foreground">
-                                {authorInitials || '?'}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                            <CardTitle className="text-base truncate">
-                                <Highlight text={post.title} query={query} />
-                            </CardTitle>
-                            <p className="text-xs text-muted-foreground truncate">
-                                {post.author?.name} {post.author?.lastname}
-                                {post.createdAt && (
-                                    <> · {new Date(post.createdAt).toLocaleDateString('es-MX')}</>
-                                )}
-                            </p>
-                        </div>
-                    </div>
-                    <Badge variant="outline" className="shrink-0">
-                        {post.type === 'PROJECT' ? 'Proyecto' : 'Taller'}
-                    </Badge>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <CardDescription className="line-clamp-2">
-                    <Highlight text={post.description} query={query} />
-                </CardDescription>
-            </CardContent>
-            <CardFooter className="flex gap-2 pt-0">
-                <Button variant="outline" size="sm" asChild className="flex-1">
-                    <Link href={`/posts/${post.id}`}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        Ver detalles
-                    </Link>
-                </Button>
-                <div className="flex-1">
-                    <ApplyButton postId={post.id} />
-                </div>
-            </CardFooter>
-        </Card>
-    );
-}
-
-/**
- * Resalta las ocurrencias de `query` dentro de `text`.
- * Case-insensitive. Si no hay query devuelve el texto plano.
- */
-function Highlight({ text, query }: { text: string; query: string }) {
-    const q = query.trim();
-    if (!q) return <>{text}</>;
-
-    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escaped})`, 'gi');
-    const parts = text.split(regex);
-
-    return (
-        <>
-            {parts.map((part, i) =>
-                regex.test(part) ? (
-                    <mark key={i} className="bg-yellow-200/70 dark:bg-yellow-500/30 rounded px-0.5">
-                        {part}
-                    </mark>
-                ) : (
-                    <span key={i}>{part}</span>
-                ),
-            )}
-        </>
-    );
-}
+// Las cards de resultado ahora usan PostCard (mismo diseño que Dashboard).
