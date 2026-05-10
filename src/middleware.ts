@@ -5,7 +5,16 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get('access_token')?.value;
 
     // Rutas protegidas
-    const protectedPaths = ['/dashboard', '/posts/create', '/posts/my-posts', '/account'];
+    const protectedPaths = [
+        '/dashboard',
+        '/posts/create',
+        '/posts/my-posts',
+        '/posts/',
+        '/account',
+        '/settings',
+        '/about',
+        '/search',
+    ];
     const isProtectedPath = protectedPaths.some(path =>
         request.nextUrl.pathname.startsWith(path)
     );
@@ -30,9 +39,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/dashboard/:path*',
-        '/posts/create',
-        '/posts/my-posts',
+        '/posts/:path*',
         '/account',
+        '/settings',
+        '/about',
+        '/search',
         '/login',
         '/signup',
     ],
